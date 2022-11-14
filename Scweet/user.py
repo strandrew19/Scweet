@@ -120,6 +120,17 @@ def get_users_following(users, env, verbose=1, headless=True, wait=2, limit=floa
         print(f"file saved in {file_path}")
     return following
 
+def get_retweeters(users, tweets,  env, verbose=1, headless=True, wait=2, limit=float('inf'), file_path=None):
+    retweeters = utils.get_retweets(users, tweets, headless, env, "followers", verbose, wait=wait, limit=limit)
+
+    if file_path == None:
+        file_path = 'outputs/' + str(users[0]) + '_' + str(users[-1]) + '_' + 'followers.json'
+    else:
+        file_path = file_path + str(users[0]) + '_' + str(users[-1]) + '_' + 'followers.json'
+    with open(file_path, 'w') as f:
+        json.dump(retweeters, f)
+        print(f"file saved in {file_path}")
+    return retweeters
 
 def hasNumbers(inputString):
     return any(char.isdigit() for char in inputString)
