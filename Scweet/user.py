@@ -93,30 +93,36 @@ def log_user_page(user, driver, headless=True):
     sleep(random.uniform(1, 2))
 
 
-def get_users_followers(users, env, verbose=1, headless=True, wait=2, limit=float('inf'), file_path=None):
+def get_users_followers(users, env, verbose=1, headless=True, wait=2, limit=float('inf'), file_path=None, write_out=True):
     followers = utils.get_users_follow(users, headless, env, "followers", verbose, wait=wait, limit=limit)
 
-    if file_path == None:
-        file_path = 'outputs/' + str(users[0]) + '_' + str(users[-1]) + '_' + 'followers.json'
-    else:
-        file_path = file_path + str(users[0]) + '_' + str(users[-1]) + '_' + 'followers.json'
-    with open(file_path, 'w') as f:
-        json.dump(followers, f)
-        print(f"file saved in {file_path}")
-    return followers
+    if write_out:
+        if file_path == None:
+            file_path = 'outputs/' + str(users[0]) + '_' + str(users[-1]) + '_' + 'followers.json'
+        else:
+            file_path = file_path + str(users[0]) + '_' + str(users[-1]) + '_' + 'followers.json'
+        with open(file_path, 'w') as f:
+            json.dump(followers, f)
+            print(f"file saved in {file_path}")
+        return followers
+    if not write_out:
+        return followers
 
 
-def get_users_following(users, env, verbose=1, headless=True, wait=2, limit=float('inf'), file_path=None):
+def get_users_following(users, env, verbose=1, headless=True, wait=2, limit=float('inf'), file_path=None, write_out=True):
     following = utils.get_users_follow(users, headless, env, "following", verbose, wait=wait, limit=limit)
 
-    if file_path == None:
-        file_path = 'outputs/' + str(users[0]) + '_' + str(users[-1]) + '_' + 'following.json'
-    else:
-        file_path = file_path + str(users[0]) + '_' + str(users[-1]) + '_' + 'following.json'
-    with open(file_path, 'w') as f:
-        json.dump(following, f)
-        print(f"file saved in {file_path}")
-    return following
+    if write_out:
+        if file_path == None:
+            file_path = 'outputs/' + str(users[0]) + '_' + str(users[-1]) + '_' + 'following.json'
+        else:
+            file_path = file_path + str(users[0]) + '_' + str(users[-1]) + '_' + 'following.json'
+        with open(file_path, 'w') as f:
+            json.dump(following, f)
+            print(f"file saved in {file_path}")
+        return following
+    if not write_out:
+        return following
 
 def get_retweeters(users, tweets,  env, verbose=1, headless=True, wait=2, limit=float('inf'), file_path=None):
     retweeters = utils.get_retweets(users, tweets, headless, env, "followers", verbose, wait=wait, limit=limit)
@@ -133,3 +139,4 @@ def get_retweeters(users, tweets,  env, verbose=1, headless=True, wait=2, limit=
 
 def hasNumbers(inputString):
     return any(char.isdigit() for char in inputString)
+
