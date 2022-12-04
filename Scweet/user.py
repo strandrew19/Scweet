@@ -4,87 +4,109 @@ import random
 import json
 from selenium.webdriver.common.by import By
 
-def get_user_information(users, driver=None, headless=True):
+def get_user_information(users, driver=None, headless=True, description=False):
     """ get user information if the "from_account" argument is specified """
 
     driver = utils.init_driver(headless=headless)
 
     users_info = {}
 
-    for i, user in enumerate(users):
+    #used to just grab user descriptions and no print outs
+    if description:
+        print('Grabbing Descriptions')
+        for i, user in enumerate(users):
 
-        log_user_page(user, driver)
-        print(i, len(users) - 1)
-        if user is not None:
-            try:
-                following = driver.find_element(By.XPATH,
-                    '//a[contains(@href,"/following")]/span[1]/span[1]').text
-            except Exception as e:
-                following = ""
+            log_user_page(user, driver)
+            print(i, len(users) - 1)
+            if user is not None:
+                try:
+                    desc = driver.find_element(By.XPATH,'//div[contains(@data-testid,"UserDescription")]').text
+                except Exception as e:
+                    desc = ""
+                users_info[user] = [desc]
+                if i == len(users) - 1:
+                    driver.close()
+                    return users_info
+            else:
+                print("You must specify the user")
+                continue
 
-            try:
-                followers = driver.find_element(By.XPATH,
-                    '//a[contains(@href,"/followers")]/span[1]/span[1]').text
-            except Exception as e:
-                followers = ""
 
-            try:
-                element = driver.find_element(By.XPATH,'//div[contains(@data-testid,"UserProfileHeader_Items")]//a[1]')
-                website = element.get_attribute("href")
-            except Exception as e:
-                website = ""
+    if not description:
+        for i, user in enumerate(users):
 
-            try:
-                desc = driver.find_element(By.XPATH,'//div[contains(@data-testid,"UserDescription")]').text
-            except Exception as e:
-                desc = ""
-            try:
-                join_date = driver.find_element(By.XPATH,
-                    '//div[contains(@data-testid,"UserProfileHeader_Items")]/span[3]').text
-                birthday = driver.find_element(By.XPATH,
-                    '//div[contains(@data-testid,"UserProfileHeader_Items")]/span[2]').text
-                location = driver.find_element(By.XPATH,
-                    '//div[contains(@data-testid,"UserProfileHeader_Items")]/span[1]').text
-            except Exception as e:
+            log_user_page(user, driver)
+            print(i, len(users) - 1)
+            if user is not None:
+                try:
+                    following = driver.find_element(By.XPATH,
+                        '//a[contains(@href,"/following")]/span[1]/span[1]').text
+                except Exception as e:
+                    following = ""
+
+                try:
+                    followers = driver.find_element(By.XPATH,
+                        '//a[contains(@href,"/followers")]/span[1]/span[1]').text
+                except Exception as e:
+                    followers = ""
+
+                try:
+                    element = driver.find_element(By.XPATH,'//div[contains(@data-testid,"UserProfileHeader_Items")]//a[1]')
+                    website = element.get_attribute("href")
+                except Exception as e:
+                    website = ""
+
+                try:
+                    desc = driver.find_element(By.XPATH,'//div[contains(@data-testid,"UserDescription")]').text
+                except Exception as e:
+                    desc = ""
                 try:
                     join_date = driver.find_element(By.XPATH,
+                        '//div[contains(@data-testid,"UserProfileHeader_Items")]/span[3]').text
+                    birthday = driver.find_element(By.XPATH,
                         '//div[contains(@data-testid,"UserProfileHeader_Items")]/span[2]').text
-                    span1 = driver.find_element(By.XPATH,
+                    location = driver.find_element(By.XPATH,
                         '//div[contains(@data-testid,"UserProfileHeader_Items")]/span[1]').text
-                    if hasNumbers(span1):
-                        birthday = span1
-                        location = ""
-                    else:
-                        location = span1
-                        birthday = ""
                 except Exception as e:
-                    # print(e)
                     try:
                         join_date = driver.find_element(By.XPATH,
+                            '//div[contains(@data-testid,"UserProfileHeader_Items")]/span[2]').text
+                        span1 = driver.find_element(By.XPATH,
                             '//div[contains(@data-testid,"UserProfileHeader_Items")]/span[1]').text
-                        birthday = ""
-                        location = ""
+                        if hasNumbers(span1):
+                            birthday = span1
+                            location = ""
+                        else:
+                            location = span1
+                            birthday = ""
                     except Exception as e:
                         # print(e)
-                        join_date = ""
-                        birthday = ""
-                        location = ""
-            print("--------------- " + user + " information : ---------------")
-            print("Following : ", following)
-            print("Followers : ", followers)
-            print("Location : ", location)
-            print("Join date : ", join_date)
-            print("Birth date : ", birthday)
-            print("Description : ", desc)
-            print("Website : ", website)
-            users_info[user] = [following, followers, join_date, birthday, location, website, desc]
+                        try:
+                            join_date = driver.find_element(By.XPATH,
+                                '//div[contains(@data-testid,"UserProfileHeader_Items")]/span[1]').text
+                            birthday = ""
+                            location = ""
+                        except Exception as e:
+                            # print(e)
+                            join_date = ""
+                            birthday = ""
+                            location = ""
+                print("--------------- " + user + " information : ---------------")
+                print("Following : ", following)
+                print("Followers : ", followers)
+                print("Location : ", location)
+                print("Join date : ", join_date)
+                print("Birth date : ", birthday)
+                print("Description : ", desc)
+                print("Website : ", website)
+                users_info[user] = [following, followers, join_date, birthday, location, website, desc]
 
-            if i == len(users) - 1:
-                driver.close()
-                return users_info
-        else:
-            print("You must specify the user")
-            continue
+                if i == len(users) - 1:
+                    driver.close()
+                    return users_info
+            else:
+                print("You must specify the user")
+                continue
 
 
 def log_user_page(user, driver, headless=True):
